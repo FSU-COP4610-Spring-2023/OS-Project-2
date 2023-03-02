@@ -1,0 +1,1 @@
+cmd_/home/vboxuser/COP4610/clone/OS-Project-2/Part2/Module.symvers := sed 's/ko$$/o/' /home/vboxuser/COP4610/clone/OS-Project-2/Part2/modules.order | scripts/mod/modpost -m -a  -o /home/vboxuser/COP4610/clone/OS-Project-2/Part2/Module.symvers -e -i Module.symvers   -T -

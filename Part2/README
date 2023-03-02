@@ -1,0 +1,13 @@
+Makefile:
+	Use the make command to compile the my_timer.c file and create the following files
+	modules.order
+	Module.symbers
+	my_timer.ko
+	my_timer.mod
+	my_timer.mod.c
+	my_timer.mod.o
+	my_timer.o
+
+my_timer.c:
+	Source code file containing code for my_timer kernel module, which creates a timer proc 
+        entry at /proc/timer.
