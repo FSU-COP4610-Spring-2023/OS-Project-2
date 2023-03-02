@@ -1,0 +1,1 @@
+cmd_/home/vboxuser/COP4610/clone/OS-Project-2/Part2/my_timer.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/vboxuser/COP4610/clone/OS-Project-2/Part2/my_timer.ko /home/vboxuser/COP4610/clone/OS-Project-2/Part2/my_timer.o /home/vboxuser/COP4610/clone/OS-Project-2/Part2/my_timer.mod.o;  true
