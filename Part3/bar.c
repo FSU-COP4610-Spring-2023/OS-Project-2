@@ -9,12 +9,37 @@
 char* msg;
 int accesses;
 
+struct customer{
+	time_t time_entered;
+	int g_id;
+	int type;
+};
+
+struct seat{
+	bool empty, clean;
+	struct customer current_customer;
+};
+
+struct table{
+	struct seat mytable[8];
+	int emptyseats;
+};
+
+struct bar{
+	struct customer queue[32];
+	struct table mybar[4];
+};
+
+MODULE_LICENSE("Dual BSD/GPL");
+
 static int bar_init(void){
 	printk(KERN_ALERT "Starting");
 	accesses=0;
 	// create new proc entry
 	return 0;
 }
+
+
 
 static void bar_exit(void){
 	printk(KERN_ALERT "Exiting");
