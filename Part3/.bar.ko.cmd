@@ -1,0 +1,1 @@
+cmd_/home/osboxes/Documents/GitHub/OS-Project-2/Part3/bar.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/osboxes/Documents/GitHub/OS-Project-2/Part3/bar.ko /home/osboxes/Documents/GitHub/OS-Project-2/Part3/bar.o /home/osboxes/Documents/GitHub/OS-Project-2/Part3/bar.mod.o;  true
