@@ -7,10 +7,11 @@
 #include <linux/slab.h>
 
 char* msg;
-int accesses;
+int len, temp, accesses;
+struct timespec64 currentTime;
 
 struct customer{
-	time_t time_entered;
+	struct timespec64 time_entered;
 	int g_id;
 	int type;
 };
@@ -32,10 +33,36 @@ struct bar{
 
 MODULE_LICENSE("Dual BSD/GPL");
 
+static ssize_t read_proc(struct file *filp, char* buf, size_t count, loff_t *offp){
+    if (count > temp){
+        count = temp;
+    }
+    temp -= count;
+    copy_to_user(buf, msg, count);
+    if (count == 0){
+        temp = len;
+    }
+    return count;
+}
+
+static const struct proc_ops po = {
+  .proc_read = read_proc,
+};
+
+void create_new_proc_entry(void){
+  proc_create("majorsbar", 0, NULL, &po);
+
+  msg=kmalloc(sizeof(char) * 50, FL_RECLAIM);
+  snprintf(msg, 50, "Testing that the proc is working correctly\n");
+
+  len=strlen(msg);
+  temp=len;
+}
+
 static int bar_init(void){
 	printk(KERN_ALERT "Starting");
 	accesses=0;
-	// create new proc entry
+	create_new_proc_entry();
 	return 0;
 }
 
@@ -44,7 +71,7 @@ static int bar_init(void){
 static void bar_exit(void){
 	printk(KERN_ALERT "Exiting");
 	kfree(msg);
-	// remove proc entry
+	remove_proc_entry("majorsbar", NULL);
 }
 
 module_init(bar_init);
