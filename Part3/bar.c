@@ -195,7 +195,24 @@ static int bar_init(void){
     return 0;
 }
 
+int customer_arrival(int number_of_customers, int type){
+    struct customer *newCustomer;
 
+    if (number_of_customers < 1 || number_of_customers > 8){ // number of customers in group not valid
+        return 1;
+    }
+
+    if (type < 0 || type > 4){ // type (class year) not valid
+        return 1;
+    }
+
+    newCustomer = kmalloc(sizeof(struct customer), GFP_KERNEL); // Using kmalloc to dynamically allocate space for customers
+    newCustomer->group_id = number_of_customers; // Add size of group to customer struct
+    newCustomer->type = type; // Add type (class year) to customer struct
+    list_add_tail(&newCustomer->list, &open_bar.queue); // Add to end of queue (first param new entry, current queue head)
+
+    return 0;
+}
 
 static void bar_exit(void){
     printk(KERN_ALERT "Exiting");
