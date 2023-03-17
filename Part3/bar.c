@@ -114,14 +114,14 @@ void waiterRemove(void){ // Removes finished customers from current table
 void waiterAdd(void){
     if (list_empty(&open_bar.queue) == 1) // if waiting queue is not empty
     {
-        int i;
-        struct customer *firstCustomer;
+        int i, groupSize;
+        struct customer *firstCustomer; // first customer takes first element in list
         firstCustomer = list_first_entry(&open_bar.queue, struct customer, list);
         for(i = 0; i < 8; i++)
         {
             if (barWaiter.currentTable.mySeats[i].empty == 1 && barWaiter.currentTable.mySeats[i].clean == 1) // if current seat is empty and clean
             {
-                firstCustomer = list_first_entry(&open_bar.queue, struct customer, list); // first customer takes first element in list
+		// implement wait 1 second
                 barWaiter.currentTable.mySeats[i].empty = 0; // seat no longer empty
                 barWaiter.currentTable.mySeats[i].clean = 0; // seat no longer clean
                 barWaiter.currentTable.mySeats[i].current_customer = *firstCustomer; // sets new customer to seat
@@ -132,10 +132,9 @@ void waiterAdd(void){
                 firstCustomer->time_entered = currentTime; // updates time_entered with that time
             }
         }
+	list_del(&firstCustomer->list); // deletes fist customer from list
     }
-   // call other waiter functions
 }
-
 
 // Waiter functions END
 
@@ -171,11 +170,13 @@ void waiter(void){
     while(open_bar.status == OFFLINE){
     }
     while(open_bar.status != OFFLINE){
-        for(i = 0; i < 4; i++){
-            for(j = 0; j < 8; j++){
-                // Here is where the waiter logic will be implemented
-            }
-        }
+        waiterRemove(); // 1. Remove customers who are done drinking at current table.
+
+        waiterAdd(); // 2. Add customers if possible (if clean and empty space).
+
+        waiterClean(); // 3. Clean table if possible (if table empty).
+
+        waiterMoveToNext(); // Move to next table
     }
 }
 
