@@ -23,7 +23,7 @@ enum Type { FRESHMAN, SOPHOMORE, JUNIOR, SENIOR, PROFESSOR };
 
 struct customer{
 	struct timespec64 time_entered;
-	int g_id;
+	int group_id;
 	enum Type type;
         struct list_head list;
 };
@@ -112,9 +112,30 @@ void waiterRemove(void){ // Removes finished customers from current table
 }
 
 void waiterAdd(void){
-    // Introduce use of linked list here since
-    // customers will need to be grabbed from the queue
+    if (list_empty(&open_bar.queue) == 1) // if waiting queue is not empty
+    {
+        int i;
+        struct customer *firstCustomer;
+        firstCustomer = list_first_entry(&open_bar.queue, struct customer, list);
+        for(i = 0; i < 8; i++)
+        {
+            if (barWaiter.currentTable.mySeats[i].empty == 1 && barWaiter.currentTable.mySeats[i].clean == 1) // if current seat is empty and clean
+            {
+                firstCustomer = list_first_entry(&open_bar.queue, struct customer, list); // first customer takes first element in list
+                barWaiter.currentTable.mySeats[i].empty = 0; // seat no longer empty
+                barWaiter.currentTable.mySeats[i].clean = 0; // seat no longer clean
+                barWaiter.currentTable.mySeats[i].current_customer = *firstCustomer; // sets new customer to seat
+                barWaiter.currentTable.emptySeats--; // removes empty seat from table
+                barWaiter.currentTable.cleanSeats--; // removes clean seat from table
+                list_del(&firstCustomer->list); // deletes fist customer from list
+                ktime_get_real_ts64(&currentTime); // gets current time
+                firstCustomer->time_entered = currentTime; // updates time_entered with that time
+            }
+        }
+    }
+   // call other waiter functions
 }
+
 
 // Waiter functions END
 
