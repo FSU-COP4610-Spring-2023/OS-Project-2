@@ -7,6 +7,7 @@
 #include <linux/uaccess.h>
 #include <linux/list.h>
 #include <linux/slab.h>
+#include <linux/delay.h>
 
 
 char* msg;
@@ -56,9 +57,12 @@ struct waiter{
 void waiterInit(void){
     barWaiter.currentTableNum = 0;
     barWaiter.currentTable = open_bar.myTables[0];
+    waiter();
 }
 
 void waiterMoveToNext(void){ // Sets up circular scan motion
+    open_bar.status = MOVING;
+    mdelay(2000); // 2 second delay
     barWaiter.currentTableNum = (barWaiter.currentTableNum + 1) % 4;
     barWaiter.currentTable = open_bar.myTables[barWaiter.currentTableNum];
 }
@@ -86,25 +90,34 @@ void waiterRemove(void){ // Removes finished customers from current table
         timeElapsed = currentTime.tv_sec - currentCustomer.time_entered.tv_sec;
         switch (currentCustomer.type){
           case FRESHMAN:
-              if (timeElapsed >= 5)
+              if (timeElapsed >= 5){
+                  mdelay(1000);
                   barWaiter.currentTable.mySeats[i].empty = 1;
+          }
               break;
           case SOPHOMORE:
-              if (timeElapsed >= 10)
+              if (timeElapsed >= 10) {
+                  mdelay(1000);
                   barWaiter.currentTable.mySeats[i].empty = 1;
+          }
               break;
           case JUNIOR:
-              if (timeElapsed >= 15)
+              if (timeElapsed >= 15){
+                  mdelay(1000);
                   barWaiter.currentTable.mySeats[i].empty = 1;
+          }
               break;
           case SENIOR:
-              if (timeElapsed >= 20)
+              if (timeElapsed >= 20){
+                  mdelay(1000);
                   barWaiter.currentTable.mySeats[i].empty = 1;
+          }
               break;
           case PROFESSOR:
-              if (timeElapsed >= 25)
+              if (timeElapsed >= 25){
+                 mdelay(1000);
                  barWaiter.currentTable.mySeats[i].empty = 1;
-              break;
+          }
           default:
             // Do nothing
         }
