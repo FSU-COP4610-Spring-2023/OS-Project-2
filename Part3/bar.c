@@ -125,27 +125,42 @@ void waiterRemove(void){ // Removes finished customers from current table
 }
 
 void waiterAdd(void){
+    // error checking if queue is empty
+    
     if (list_empty(&open_bar.queue) == 1) // if waiting queue is not empty
     {
         int i, groupSize;
-        struct customer *firstCustomer; // first customer takes first element in list
-        firstCustomer = list_first_entry(&open_bar.queue, struct customer, list);
-        for(i = 0; i < 8; i++)
+        struct list_head *firstList;
+        struct customer *currentCustomer;
+        firstList = list_first_entry(&open_bar.queue, struct list_head, list); // Grabs first group
+        currentCustomer = list_first_entry(firstList, struct customer, list); // Grabs first customer in group
+        groupSize = currentCustomer->group_id;
+
+        for(i = 0; i < groupSize; i++)
         {
             if (barWaiter.currentTable.mySeats[i].empty == 1 && barWaiter.currentTable.mySeats[i].clean == 1) // if current seat is empty and clean
             {
-		// implement wait 1 second
+                msleep(1000); // 1 second delay
                 barWaiter.currentTable.mySeats[i].empty = 0; // seat no longer empty
                 barWaiter.currentTable.mySeats[i].clean = 0; // seat no longer clean
-                barWaiter.currentTable.mySeats[i].current_customer = *firstCustomer; // sets new customer to seat
+                barWaiter.currentTable.mySeats[i].current_customer = *currentCustomer; // sets new customer to seat
                 barWaiter.currentTable.emptySeats--; // removes empty seat from table
                 barWaiter.currentTable.cleanSeats--; // removes clean seat from table
-                list_del(&firstCustomer->list); // deletes fist customer from list
                 ktime_get_real_ts64(&currentTime); // gets current time
-                firstCustomer->time_entered = currentTime; // updates time_entered with that time
+                currentCustomer->time_entered = currentTime; // updates time_entered with that time
+                currentCustomer = list_next_entry(currentCustomer, list); // moves on to next customer in group
             }
         }
-	list_del(&firstCustomer->list); // deletes fist customer from list
+
+	// Deletes all elements in first spot of waiting queue
+	struct list_head *pos, *q;
+	list_for_each_safe(pos, q, &firstList->list){
+	    struct customer *entry = list_entry(pos, struct customer, list);
+	    if (entry == NULL)
+		break;
+	    list_del(pos);
+	    kfree(entry);
+	}
     }
 }
 
@@ -210,7 +225,9 @@ static int bar_init(void){
 }
 
 int customer_arrival(int number_of_customers, int type){
-    struct customer *newCustomer;
+    int i;
+    struct list_head *newList;
+    //struct customer *newCustomer;
 
     if (number_of_customers < 1 || number_of_customers > 8){ // number of customers in group not valid
         return 1;
@@ -220,13 +237,18 @@ int customer_arrival(int number_of_customers, int type){
         return 1;
     }
 
-    newCustomer = kmalloc(sizeof(struct customer), GFP_KERNEL); // Using kmalloc to dynamically allocate space for customers
-    newCustomer->group_id = number_of_customers; // Add size of group to customer struct
-    newCustomer->type = type; // Add type (class year) to customer struct
-    list_add_tail(&newCustomer->list, &open_bar.queue); // Add to end of queue (first param new entry, current queue head)
+    INIT_LIST_HEAD(newList);
+    for (i = 0; i < number_of_customers; i++){
+        struct customer *newCustomer = kmalloc(sizeof(struct customer), GFP_KERNEL); // Using kmalloc to dynamically allocate space for customers
+        newCustomer->group_id = number_of_customers; // Add size of group to customer struct
+        newCustomer->type = type; // Add type (class year) to customer struct
+        list_add_tail(&newCustomer->list, newList); // Add to end of queue (first param new entry, current queue head)
+    }
 
+    list_add_tail(newList, &open_bar.queue);
     return 0;
 }
+
 
 static void bar_exit(void){
     printk(KERN_ALERT "Exiting");
