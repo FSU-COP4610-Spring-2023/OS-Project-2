@@ -1,10 +1,10 @@
-obj-m += bar.o
+obj-y := sys_call.o
+obj-m := barstool.o
 
-PWD := `pwd`
-
-KERNELDIR := /lib/modules/`uname -r`/build
+PWD := $(shell pwd)
+KDIR := /lib/modules/`uname -r`/build
 
 default:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) SUBDIRS=$(PWD) modules
 clean:
-	rm -f *.ko *.o Module* *mod*
+	rm -f *.o *.ko *.mod.* Module.* modules.* *.mod .*.cmd
