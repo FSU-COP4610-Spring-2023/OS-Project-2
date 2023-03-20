@@ -8,6 +8,7 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+#include <linux/mutex.h>
 
 char* msg;
 int len, temp; // for read_proc usage
@@ -49,6 +50,8 @@ struct bar{
 struct waiter{
 	int currentTableNum;
 	struct table currentTable;
+	struct task_struct *kthread;
+        struct mutex mutex;
 };
 
 extern int (*STUB_initialize_bar) (void);
@@ -110,6 +113,8 @@ void waiter(void);
 void waiterInit(void){
     barWaiter.currentTableNum = 0;
     barWaiter.currentTable = open_bar.myTables[0];
+    mutex_init(&barWaiter.mutex);
+    barWaiter.kthread = kthread_run(waiter_thread, NULL, "waiter");
 }
 
 void waiterMoveToNext(void){ // Sets up circular scan motion
@@ -262,19 +267,23 @@ void create_new_proc_entry(void){
     temp=len;
 }
 
-void waiter(void){
-    while(open_bar.status == OFFLINE){
+// main waiter thread control function
+int waiter_thread(void *data)
+{
+    while (!kthread_should_stop()) {
+	if (strcmp(open_bar.status, "IDLE") == 0){
+	    waiterRemove(); // 1. Remove customers who are done drinking at current table.
+
+            waiterAdd(); // 2. Add customers if possible (if clean and empty space).
+
+            waiterClean(); // 3. Clean table if possible (if table empty).
+
+            waiterMoveToNext(); // Move to next table
+	}
     }
-    while(open_bar.status != OFFLINE){
-        waiterRemove(); // 1. Remove customers who are done drinking at current table.
-
-        waiterAdd(); // 2. Add customers if possible (if clean and empty space).
-
-        waiterClean(); // 3. Clean table if possible (if table empty).
-
-        waiterMoveToNext(); // Move to next table
-    }
+    return 0;
 }
+
 
 static int bar_init(void){
     printk(KERN_ALERT "Starting");
@@ -299,6 +308,7 @@ static int bar_init(void){
 }
 
 static void bar_exit(void){
+    kthread_stop(barWaiter.kthread); 
     printk(KERN_ALERT "Exiting");
     kfree(msg);
     STUB_initialize_bar = NULL;
