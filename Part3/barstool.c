@@ -182,8 +182,6 @@ void waiterRemove(void){ // Removes finished customers from current table
 }
 
 void waiterAdd(void){
-    // error checking if queue is empty
-    
     if (list_empty(&open_bar.queue) == 1) // if waiting queue is not empty
     {
 	struct list_head *pos, *q; // For deletion at the end
@@ -271,7 +269,6 @@ void create_new_proc_entry(void){
 int waiter_thread(void *data)
 {
     while (!kthread_should_stop()) {
-	if (strcmp(open_bar.status, "IDLE") == 0){
 	    waiterRemove(); // 1. Remove customers who are done drinking at current table.
 
             waiterAdd(); // 2. Add customers if possible (if clean and empty space).
@@ -279,7 +276,6 @@ int waiter_thread(void *data)
             waiterClean(); // 3. Clean table if possible (if table empty).
 
             waiterMoveToNext(); // Move to next table
-	}
     }
     return 0;
 }
