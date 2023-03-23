@@ -65,12 +65,17 @@ Files:
 
 Bugs:
 
-    Minor issue. The barstool.c file features a mutex_lock_interruptible() around all waiter_thread activity as it is always handling either the queue or the bar  itself, which the proc must read from. The waiter activity is also set to not stop until all customers are served, tables are cleaned, and the bar has gone offline, so when the waiter has many things left to do it will hold the lock until the CPU sends the interrupt signal when you try to force it to shut down using 
+    Minor issue. The barstool.c file features a mutex_lock_interruptible() around all waiter_thread activity as it is always handling either the queue or the bar  
+    itself, which the proc must read from. The waiter activity is also set to not stop until all customers are served, tables are cleaned, and the bar has gone 
+    offline, so when the waiter has many things left to do it will hold the lock until the CPU sends the interrupt signal when you try to force it to shut down using 
 sudo rmmod barstool.
 
 Special Considerations:
 
-    Scheduler was implemented using a CSCAN policy of going through the tables. When adding customers to the tables, the barWaiter looks through the queue in FIFO order to find any groups that could fit into the table it is currently on. This means that if the immediate next group is too large for a table with 6 spots occupied, but there is a group of 2 right behind it that could fit perfectly, the scheduler will take that group from the queue out of order and place it into the table.
+    Scheduler was implemented using a CSCAN policy of going through the tables. When adding customers to the tables, the barWaiter looks through the queue in FIFO 
+    order to find any groups that could fit into the table it is currently on. This means that if the immediate next group is too large for a table with 6 spots 
+    occupied, but there is a group of 2 right behind it that could fit perfectly, the scheduler will take that group from the queue out of order and place it into the 
+    table.
     
     
 Extra credit:
