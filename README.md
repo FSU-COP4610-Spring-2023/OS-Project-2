@@ -75,7 +75,9 @@ Special Considerations:
     Scheduler was implemented using a CSCAN policy of going through the tables. When adding customers to the tables, the barWaiter looks through the queue in FIFO 
     order to find any groups that could fit into the table it is currently on. This means that if the immediate next group is too large for a table with 6 spots 
     occupied, but there is a group of 2 right behind it that could fit perfectly, the scheduler will take that group from the queue out of order and place it into the 
-    table.
+    table. 
+    Also, when looking through commits, note that any commits made under the name "kasryan" or "vboxuser" belong to Jonathan Guzman, pushed through his virtual
+    machine at home.
     
     
 Extra credit:
