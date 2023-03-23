@@ -68,7 +68,7 @@ Bugs:
     Minor issue. The barstool.c file features a mutex_lock_interruptible() around all waiter_thread activity as it is always handling either the queue or the bar  
     itself, which the proc must read from. The waiter activity is also set to not stop until all customers are served, tables are cleaned, and the bar has gone 
     offline, so when the waiter has many things left to do it will hold the lock until the CPU sends the interrupt signal when you try to force it to shut down using 
-sudo rmmod barstool.
+    sudo rmmod barstool.
 
 Special Considerations:
 
