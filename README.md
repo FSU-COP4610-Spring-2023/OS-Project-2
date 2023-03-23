@@ -17,7 +17,7 @@ Division of Labor:
     
     		Step 2 - Jonathan Guzman, Paolo Torres
     
-   		Step 3 - Jonathan Guzman
+    		Step 3 - Jonathan Guzman
     
     		Step 4 - Jonathan Guzman
     
