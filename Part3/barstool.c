@@ -137,7 +137,6 @@ int my_customer_arrival (int number_of_customers, int type){
 
 int my_close_bar (void) {
     printk(KERN_NOTICE "%s: closing bar", __FUNCTION__);
-    barWaiter.status = OFFLINE;
     offline = 1;
     return 0;
 }
