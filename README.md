@@ -4,15 +4,22 @@ Group members: Tristan Hale, Paolo Torres, Jonathan Guzman
 
 
 Division of Labor:
-Part 1: Jonathan Guzman
 
-Part 2: Jonathan Guzman
+	Part 1: 
+		Jonathan Guzman
 
-Part 3:
-    Step 1 - Jonathan Guzman, Paolo Torres, Tristan Hale
-    Step 2 - Jonathan Guzman, Paolo Torres
-    Step 3 - Jonathan Guzman
-    Step 4 - Jonathan Guzman
+	Part 2: 
+		Jonathan Guzman
+
+	Part 3:
+
+    		Step 1 - Jonathan Guzman, Paolo Torres, Tristan Hale
+    
+    		Step 2 - Jonathan Guzman, Paolo Torres
+    
+   		Step 3 - Jonathan Guzman
+    
+    		Step 4 - Jonathan Guzman
     
     
     
